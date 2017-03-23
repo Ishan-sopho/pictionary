@@ -1,17 +1,35 @@
-import os
-import pickle
-data = pickle.load(open(r'movies.dat', 'r'))
-print "enter 'y' if you want the word in pictionary and 'n' if you don't"
-for i in range(len(data[0])):
-    os.system('cls')
-    print data[0][i]
-    choice = raw_input(':')
-    while choice != 'y' or choice != 'n':
-        choice = raw_input(':')
-    if choice == 'y':
-        data[4][i] = 1
+import os,pickle
+from Tkinter import *
+file = "songs.dat"  #change this name to the file you want to rank
+data = pickle.load(open(file, 'r'))
+print "click 'yes' button if you want the word in pictionary"
+
+global i
+i=0
+def word_gen():
+    while i<len(data[0]):
+        i+=1
+        yield data[0][i]
+    pickle.dump(data, open(r'temp.dat', 'w'))
+    os.remove(file)
+    os.rename(r'temp.dat', file)
+    quit()
+global word
+word = word_gen()
+
+def rank(choice):
+    display.config(text=word.next())
+    if choice:
+        data[4][i]=1
     else:
-        data[4][i] = 0
-pickle.dump(data, open(r'temp.dat', 'r'))
-os.remove(r'movies.dat')
-os.rename(r'temp.dat', r'movies.dat')
+        data[4][i]=0
+
+root = Tk()
+
+global display
+display = Label(root, text="")
+display.pack()
+
+Button(root, text="YES", command= lambda : rank(1)).pack()
+Button(root, text="NO", command= lambda : rank(0)).pack()
+mainloop()
